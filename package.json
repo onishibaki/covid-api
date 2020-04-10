@@ -1,0 +1,19 @@
+{
+  "name": "express-api",
+  "version": "1.0.0",
+  "description": "Express api node",
+  "main": "app.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "joi": "^14.3.1",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.28",
+    "mongoose": "^5.9.7",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.2"
+  }
+}
