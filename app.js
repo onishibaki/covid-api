@@ -1,23 +1,23 @@
 const express = require('express');
 const app = express()
 // import middleware
-const morgan = require("morgan");
+const morgan = require('morgan');
 // import routes
-const  postRoutes  = require('./routes/mainRoutes');
+const  mainRoutes  = require('./routes/mainRoutes');
 // import db
 const  db  = require('./database/db');
-//import bodyParser to parse the request body
+// import bodyParser to parse the request body
 const bodyParser = require('body-parser');
-//load env variables
+// load env variables
 const dotenv = require('dotenv');
 dotenv.config();
 
-//middleware
-app.use(morgan("dev"));
+// middleware
+app.use(morgan('dev'));
 app.use(bodyParser.json());
-app.use("/", postRoutes);
+app.use('/', mainRoutes);
 
-//db connection
+// db connection
 db.dbConnector();
 
 const port = process.env.PORT || 8080;
