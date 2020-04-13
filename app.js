@@ -8,13 +8,18 @@ const  mainRoutes  = require('./routes/mainRoutes');
 const  db  = require('./database/db');
 // import bodyParser to parse the request body
 const bodyParser = require('body-parser');
+// Import the cors
+const cors = require('cors');
+const  whiteList  = require('./whitelist/whiteList');
 // load env variables
 const dotenv = require('dotenv');
 dotenv.config();
 
+
 // middleware
 app.use(morgan('dev'));
 app.use(bodyParser.json());
+app.use(cors(whiteList));
 app.use('/', mainRoutes);
 
 // db connection
