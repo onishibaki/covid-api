@@ -2,55 +2,53 @@ const mongoosePostModel = require("../model/postModel");
 const moment = require("moment-timezone");
 
 const calcDisplay = (covidDetail, countryParam) => {
+  const ystDate = moment().subtract(1, "days").tz("Asia/Tokyo").format("L");
+  const tdyDate = moment().tz("Asia/Tokyo").format("L");
+  const covidResultsDisplay = {
+    TotalPositive: 0,
+    TotalDeath: 0,
+    TotalRecovered: 0,
+    Latest: [],
+  };
+
   const filterCountry = covidDetail.filter(
     (covidDetails) => covidDetails.country == countryParam
   );
 
-  const TotalPositive = filterCountry.reduce(
-    (total, filterCountrys) => filterCountrys.covid_positive + total,
-    0
+  const checkLatestDate = filterCountry.some(
+    (filterCountrys) => filterCountrys.covid_date == tdyDate
   );
 
-  const TotalDeath = filterCountry.reduce(
-    (total, filterCountrys) => filterCountrys.covid_death + total,
-    0
-  );
+  const checkExistData = (detailParam) => {
+    const { covid_positive, covid_death, covid_recovered } = detailParam;
 
-  const TotalRecovered = filterCountry.reduce(
-    (total, filterCountrys) => filterCountrys.covid_recovered + total,
-    0
-  );
-
-  const checkByLatest = filterCountry.filter(
-    (filterCountrys) =>
-      filterCountrys.covid_date == moment().tz("Asia/Tokyo").format("L")
-  );
-
-  const covidResultsDisplay = {
-    TotalPositive,
-    TotalDeath,
-    TotalRecovered,
-    Latest: [],
+    if (Object.keys(covidResultsDisplay.Latest).length === 0) {
+      covidResultsDisplay.Latest.push(detailParam);
+    } else {
+      covidResultsDisplay.Latest[0].covid_positive += covid_positive;
+      covidResultsDisplay.Latest[0].covid_death += covid_death;
+      covidResultsDisplay.Latest[0].covid_recovered += covid_recovered;
+    }
   };
 
-  checkByLatest.forEach((checkByLatests) => {
+  filterCountry.forEach((checkByLatests) => {
     const {
-      country,
+      covid_date,
       covid_positive,
       covid_death,
       covid_recovered,
     } = checkByLatests;
 
-    const checkExist = (o) => o.country == country;
+    covidResultsDisplay.TotalPositive += covid_positive;
+    covidResultsDisplay.TotalDeath += covid_death;
+    covidResultsDisplay.TotalRecovered += covid_recovered;
 
-    const checkByCountry = covidResultsDisplay.Latest.findIndex(checkExist);
+    if (covid_date === tdyDate && checkLatestDate) {
+      checkExistData(checkByLatests);
+    }
 
-    if (checkByCountry < 0) {
-      covidResultsDisplay.Latest.push(checkByLatests);
-    } else {
-      checkByLatest[checkByCountry].covid_positive += covid_positive;
-      checkByLatest[checkByCountry].covid_death += covid_death;
-      checkByLatest[checkByCountry].covid_recovered += covid_recovered;
+    if (covid_date === ystDate && !checkLatestDate) {
+      checkExistData(checkByLatests);
     }
   });
 
