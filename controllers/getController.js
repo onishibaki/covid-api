@@ -1,9 +1,6 @@
 const mongoosePostModel = require("../model/postModel");
-const moment = require("moment-timezone");
 
 const calcDisplay = (covidDetail, countryParam) => {
-  const ystDate = moment().subtract(1, "days").tz("Asia/Tokyo").format("L");
-  const tdyDate = moment().tz("Asia/Tokyo").format("L");
   const covidResultsDisplay = {
     TotalPositive: 0,
     TotalDeath: 0,
@@ -13,10 +10,6 @@ const calcDisplay = (covidDetail, countryParam) => {
 
   const filterCountry = covidDetail.filter(
     (covidDetails) => covidDetails.country == countryParam
-  );
-
-  const checkLatestDate = filterCountry.some(
-    (filterCountrys) => filterCountrys.covid_date == tdyDate
   );
 
   const checkExistData = (detailParam) => {
@@ -31,6 +24,8 @@ const calcDisplay = (covidDetail, countryParam) => {
     }
   };
 
+  const latestDate = filterCountry[filterCountry.length - 1].covid_date;
+
   filterCountry.forEach((checkByLatests) => {
     const {
       covid_date,
@@ -43,11 +38,7 @@ const calcDisplay = (covidDetail, countryParam) => {
     covidResultsDisplay.TotalDeath += covid_death;
     covidResultsDisplay.TotalRecovered += covid_recovered;
 
-    if (covid_date === tdyDate && checkLatestDate) {
-      checkExistData(checkByLatests);
-    }
-
-    if (covid_date === ystDate && !checkLatestDate) {
+    if (covid_date === latestDate) {
       checkExistData(checkByLatests);
     }
   });
