@@ -1,4 +1,5 @@
 const mongoosePostModel = require("../model/postModel");
+const moment = require("moment-timezone");
 
 const calcDisplay = (covidDetail, countryParam) => {
   const covidResultsDisplay = {
@@ -13,34 +14,38 @@ const calcDisplay = (covidDetail, countryParam) => {
   );
 
   const checkExistData = (detailParam) => {
-    const { covid_positive, covid_death, covid_recovered } = detailParam;
-
-    if (Object.keys(covidResultsDisplay.Latest).length === 0) {
-      covidResultsDisplay.Latest.push(detailParam);
-    } else {
-      covidResultsDisplay.Latest[0].covid_positive += covid_positive;
-      covidResultsDisplay.Latest[0].covid_death += covid_death;
-      covidResultsDisplay.Latest[0].covid_recovered += covid_recovered;
-    }
-  };
-
-  const latestDate = filterCountry[filterCountry.length - 1].covid_date;
-
-  filterCountry.forEach((checkByLatests) => {
     const {
       covid_date,
       covid_positive,
       covid_death,
       covid_recovered,
-    } = checkByLatests;
+    } = detailParam;
+
+    const checkExist = (o) => o.covid_date == covid_date;
+
+    const checkByCountry = covidResultsDisplay.Latest.findIndex(checkExist);
+
+    if (checkByCountry < 0) {
+      covidResultsDisplay.Latest.push(detailParam);
+    } else {
+      covidResultsDisplay.Latest[
+        checkByCountry
+      ].covid_positive += covid_positive;
+      covidResultsDisplay.Latest[checkByCountry].covid_death += covid_death;
+      covidResultsDisplay.Latest[
+        checkByCountry
+      ].covid_recovered += covid_recovered;
+    }
+  };
+
+  filterCountry.forEach((checkByLatests) => {
+    const { covid_positive, covid_death, covid_recovered } = checkByLatests;
 
     covidResultsDisplay.TotalPositive += covid_positive;
     covidResultsDisplay.TotalDeath += covid_death;
     covidResultsDisplay.TotalRecovered += covid_recovered;
 
-    if (covid_date === latestDate) {
-      checkExistData(checkByLatests);
-    }
+    checkExistData(checkByLatests);
   });
 
   return covidResultsDisplay;
