@@ -1,10 +1,10 @@
 const mongoosePostModel = require("../model/postModel");
 
 exports.createPost = (req, res) => {
-  const post = new mongoosePostModel(req.body);
-  post.save().then((result) => {
+  const covid = new mongoosePostModel(req.body);
+  covid.save().then((result) => {
     res.send({
-      post: result,
+      covid: result,
     });
   });
 };

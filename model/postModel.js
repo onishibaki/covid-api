@@ -30,4 +30,4 @@ postSchema.methods.joiValidate = (obj) => {
   return Joi.validate(obj, schema);
 };
 
-module.exports = mongoose.model("covidUpdate", postSchema);
+module.exports = mongoose.model("covid_collection", postSchema);
